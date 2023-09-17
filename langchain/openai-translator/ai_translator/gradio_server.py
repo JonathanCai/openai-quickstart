@@ -7,24 +7,27 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from utils import ArgumentParser, LOG
 from translator import PDFTranslator, TranslationConfig
 
-
-def translation(input_file, source_language, target_language):
+## add one more parameter: style, use the style to apply different translation styles
+def translation(input_file, source_language, target_language,styles):
     LOG.debug(f"[翻译任务]\n源文件: {input_file.name}\n源语言: {source_language}\n目标语言: {target_language}")
-
+## change function translate_pdf, to add one more parameter: style
     output_file_path = Translator.translate_pdf(
-        input_file.name, source_language=source_language, target_language=target_language)
+        input_file.name, source_language=source_language, target_language=target_language, styles=styles)
 
     return output_file_path
 
 def launch_gradio():
 
+    styles = ["General", "Novel", "News Article", "Writer Style"]  # Add more styles as needed
+    
     iface = gr.Interface(
         fn=translation,
         title="OpenAI-Translator v2.0(PDF 电子书翻译工具)",
         inputs=[
             gr.File(label="上传PDF文件"),
             gr.Textbox(label="源语言（默认：英文）", placeholder="English", value="English"),
-            gr.Textbox(label="目标语言（默认：中文）", placeholder="Chinese", value="Chinese")
+            gr.Textbox(label="目标语言（默认：中文）", placeholder="Chinese", value="Chinese"),
+            gr.Dropdown(label="翻译风格", choices=styles)
         ],
         outputs=[
             gr.File(label="下载翻译文件")
